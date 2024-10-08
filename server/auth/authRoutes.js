@@ -4,7 +4,6 @@ const pool = require("../db/db");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const validator = require("validator");
-const cookieParser = require("cookie-parser");
 
 require("dotenv").config();
 
@@ -50,7 +49,10 @@ router.post("/register", async (req, res) => {
       return res.status(403).json({ message: "Username already in use." });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(
+      password,
+      process.env.BCRYPT_SALT_ROUNDS
+    );
 
     const postUser = await pool.query(
       `
@@ -90,7 +92,7 @@ router.post("/login", async (req, res) => {
     );
 
     if (user.rows.length === 0) {
-      return res.status(400).json({ message: "User or Email not found." });
+      return res.status(400).json({ message: "Invalid Credentials." });
     }
 
     const checkPassword = await bcrypt.compare(password, user.rows[0].password);
@@ -106,13 +108,13 @@ router.post("/login", async (req, res) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       maxAge: 3600000,
+      sameSite: "strict", // Prevent CSRF
     });
 
     return res.status(200).json({
       message: `Welcome ${user.rows[0].username}`,
-      token,
     });
   } catch (error) {
     console.error("Error during login: ", error);
