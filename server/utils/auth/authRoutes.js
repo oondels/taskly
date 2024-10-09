@@ -1,15 +1,62 @@
 const express = require("express");
 const router = express.Router();
-const pool = require("../db/db");
+const pool = require("../../db/db");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const validator = require("validator");
-const logger = require("../utils/logger");
-const cookieParser = require("cookie-parser");
+const logger = require("../logger");
 
-const findUser = require("../utils/authUtils");
+const passport = require("passport");
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
+
+const findUser = require("../authUtils");
 
 require("dotenv").config();
+
+// OAuth Google
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: "/auth/google/callback",
+    },
+    (accessToken, refreshToken, profile, done) => {
+      const user = {
+        googleId: profile.id,
+        displayName: profile.displayName,
+        email: profile.emails[0].value,
+      };
+
+      const token = jwt.sign(user, process.env.JWT_SECRET, {
+        expiresIn: "1h",
+      });
+
+      done(null, { user, token });
+    }
+  )
+);
+
+// Login routes with google
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+router.get(
+  "/google/callback",
+  passport.authenticate("google", { session: false }),
+  (req, res) => {
+    res.cookie("token", req.user.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 3600000,
+      sameSite: "strict",
+    });
+
+    res.redirect("/protected");
+  }
+);
 
 router.post("/register", async (req, res) => {
   try {
@@ -85,23 +132,7 @@ router.post("/login", async (req, res) => {
     const { userEmail, password } = req.body;
 
     const user = await findUser(userEmail);
-    if (!user) {
-      return res.status(400).json({ message: "User or Email not found." });
-    const user = await pool.query(
-      `
-    SELECT 
-        name, username, email, password
-    FROM
-        task_manager.users
-    WHERE
-        username = $1 OR email = $1
-    `,
-      [userEmail]
-    );
-
-    if (user.rows.length === 0) {
-      return res.status(400).json({ message: "Invalid Credentials." });
-    }
+    if (!user) return res.status(400).json({ message: "Invalid Credentials." });
 
     const checkPassword = await bcrypt.compare(password, user.password);
     if (!checkPassword) {

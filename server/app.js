@@ -6,8 +6,8 @@ const pool = require("./db/db");
 const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
-const authRoutes = require("./auth/authRoutes");
-const authMiddleware = require("./auth/auth");
+const authRoutes = require("./utils/auth/authRoutes");
+const authMiddleware = require("./utils/auth/auth");
 
 const app = express();
 const port = 2399;
@@ -23,9 +23,9 @@ app.listen(port, () => {
 
 app.get("/", (req, res) => {
   console.log("Hello World");
-  res.status(200).send("Hello World!");
+  res.status(200).json({ message: "Hello World!" });
 });
 
 app.get("/protected", authMiddleware, (req, res) => {
-  res.send("Hello");
+  res.json({ message: "Accessed protected route" });
 });

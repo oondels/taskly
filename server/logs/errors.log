@@ -1,6 +1,0 @@
-2024-10-08 20:03:17 [ERROR]: Error during login: findUser is not a function
-2024-10-08 20:04:01 [ERROR]: Error during login: findUser is not a function
-2024-10-08 20:04:28 [ERROR]: Error searching user: result is not defined
-2024-10-08 20:04:44 [ERROR]: Error during login: Cannot read properties of undefined (reading '0')
-2024-10-08 20:05:24 [ERROR]: Error during login: Cannot read properties of undefined (reading '0')
-2024-10-08 20:08:10 [ERROR]: Error during login: Cannot read properties of undefined (reading '0')
