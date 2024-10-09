@@ -4,6 +4,10 @@ const pool = require("../db/db");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const validator = require("validator");
+const logger = require("../utils/logger");
+const cookieParser = require("cookie-parser");
+
+const findUser = require("../utils/authUtils");
 
 require("dotenv").config();
 
@@ -70,6 +74,7 @@ router.post("/register", async (req, res) => {
 
     return res.status(201).json({ message: "Registered Successfully." });
   } catch (error) {
+    logger.error("Error to register: " + error.message);
     console.error("Error to register: ", error);
     return res.status(500).json({ message: "Internal server error" });
   }
@@ -79,6 +84,9 @@ router.post("/login", async (req, res) => {
   try {
     const { userEmail, password } = req.body;
 
+    const user = await findUser(userEmail);
+    if (!user) {
+      return res.status(400).json({ message: "User or Email not found." });
     const user = await pool.query(
       `
     SELECT 
@@ -95,13 +103,13 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid Credentials." });
     }
 
-    const checkPassword = await bcrypt.compare(password, user.rows[0].password);
+    const checkPassword = await bcrypt.compare(password, user.password);
     if (!checkPassword) {
       return res.status(403).json({ message: "Invalid Credentials." });
     }
 
     const token = jwt.sign(
-      { username: user.rows[0].username, name: user.rows[0].name },
+      { username: user.username, name: user.name },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
@@ -114,9 +122,12 @@ router.post("/login", async (req, res) => {
     });
 
     return res.status(200).json({
+      message: `Welcome ${user.username}`,
+      token,
       message: `Welcome ${user.rows[0].username}`,
     });
   } catch (error) {
+    logger.error("Error during login: " + error.message);
     console.error("Error during login: ", error);
     return res.status(500).json({ message: "Internal server error" });
   }
