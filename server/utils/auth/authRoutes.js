@@ -14,49 +14,49 @@ const findUser = require("../authUtils");
 require("dotenv").config();
 
 // OAuth Google
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "/auth/google/callback",
-    },
-    (accessToken, refreshToken, profile, done) => {
-      const user = {
-        googleId: profile.id,
-        displayName: profile.displayName,
-        email: profile.emails[0].value,
-      };
+// passport.use(
+//   new GoogleStrategy(
+//     {
+//       clientID: process.env.GOOGLE_CLIENT_ID,
+//       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+//       callbackURL: "/auth/google/callback",
+//     },
+//     (accessToken, refreshToken, profile, done) => {
+//       const user = {
+//         googleId: profile.id,
+//         displayName: profile.displayName,
+//         email: profile.emails[0].value,
+//       };
 
-      const token = jwt.sign(user, process.env.JWT_SECRET, {
-        expiresIn: "1h",
-      });
+//       const token = jwt.sign(user, process.env.JWT_SECRET, {
+//         expiresIn: "1h",
+//       });
 
-      done(null, { user, token });
-    }
-  )
-);
+//       done(null, { user, token });
+//     }
+//   )
+// );
 
-// Login routes with google
-router.get(
-  "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
+// // Login routes with google
+// router.get(
+//   "/google",
+//   passport.authenticate("google", { scope: ["profile", "email"] })
+// );
 
-router.get(
-  "/google/callback",
-  passport.authenticate("google", { session: false }),
-  (req, res) => {
-    res.cookie("token", req.user.token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 3600000,
-      sameSite: "strict",
-    });
+// router.get(
+//   "/google/callback",
+//   passport.authenticate("google", { session: false }),
+//   (req, res) => {
+//     res.cookie("token", req.user.token, {
+//       httpOnly: true,
+//       secure: process.env.NODE_ENV === "production",
+//       maxAge: 3600000,
+//       sameSite: "strict",
+//     });
 
-    res.redirect("/protected");
-  }
-);
+//     res.redirect("/protected");
+//   }
+// );
 
 router.post("/register", async (req, res) => {
   try {
