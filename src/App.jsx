@@ -11,20 +11,13 @@ const App = () => {
       <div className="App">
         <header>
           <nav>
-            <ul>
-              <li>
-                <Link to="/">Home</Link>
-              </li>
-              <li>
-                <Link to="/tasks">Task List</Link>
-              </li>
-              <li>
-                <Link to="/login">Login</Link>
-              </li>
-              <li>
-                <Link to="/register">Register</Link>
-              </li>
-            </ul>
+            <Link to="/">Home</Link>
+
+            <Link to="/tasks">Task List</Link>
+
+            <Link to="/login">Login</Link>
+
+            <Link to="/register">Register</Link>
           </nav>
         </header>
 
@@ -37,7 +30,38 @@ const App = () => {
           </Routes>
         </main>
 
-        <footer>Hendrius Félix</footer>
+        <footer>
+          <div className="footer-content">
+            <p>
+              &copy; 2024 Taskly. Developed by Hendrius Félix. All rights
+              reserved{" "}
+            </p>
+            <ul className="footer-links">
+              <li>
+                <a href="#">Privacy Policy</a>
+              </li>
+              <li>
+                <a href="#">Terms of Service</a>
+              </li>
+              <li>
+                <a href="#">Contact Us</a>
+              </li>
+              <li>
+                <a href="https://github.com/oondels" target="_blank">
+                  GitHub
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://www.linkedin.com/in/hendriusfelix/"
+                  target="_blank"
+                >
+                  LinkedIn
+                </a>
+              </li>
+            </ul>
+          </div>
+        </footer>
       </div>
     </Router>
   );
