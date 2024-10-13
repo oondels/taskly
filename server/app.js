@@ -11,8 +11,12 @@ const authMiddleware = require("./utils/auth/auth");
 
 const app = express();
 const port = 2399;
+const ipClient = "http://localhost:3000"
 
-app.use(cors());
+app.use(cors({
+  origin: ipClient,
+  credentials: true
+}));
 app.use(express.json());
 app.use(cookieParser());
 app.use("/auth", authRoutes);

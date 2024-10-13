@@ -155,7 +155,6 @@ router.post("/login", async (req, res) => {
     return res.status(200).json({
       message: `Welcome ${user.username}`,
       token,
-      message: `Welcome ${user.rows[0].username}`,
     });
   } catch (error) {
     logger.error("Error during login: " + error.message);

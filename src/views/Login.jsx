@@ -17,6 +17,7 @@ const Login = () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
+      credentials: "include",
     })
       .then((response) => {
         if (!response.ok) {
@@ -26,7 +27,11 @@ const Login = () => {
         return response.json();
       })
       .then((data) => {
+        alert(data.message);
         console.log(data);
+      })
+      .catch((error) => {
+        console.error("Erro ao efetuar login: ", error);
       });
   };
 

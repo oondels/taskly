@@ -1,1 +1,3 @@
 2024-10-12 22:59:03 [ERROR]: Error searching user: 
+2024-10-13 08:18:50 [ERROR]: Error during login: Cannot read properties of undefined (reading '0')
+2024-10-13 08:23:05 [ERROR]: Error during login: userEmail is not defined
