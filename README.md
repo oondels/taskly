@@ -1,70 +1,93 @@
-# Getting Started with Create React App
+# Task Management Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Welcome to **Taskly** the **Task Management Application**! This application allows users to manage their daily tasks efficiently, providing both local authentication using username/password and social login through OAuth2 (e.g., Google). This repository aims to serve as a personal or professional project to showcase skills in fullstack development, with a focus on backend integration.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- **User Registration and Authentication**: Secure registration and login using JWT-based authentication.
+- **OAuth2 Integration**: Social login using Google for easier access and flexibility.
+- **Task CRUD Operations**: Create, read, update, and delete tasks.
+- **Password Security**: User passwords are hashed using bcrypt to ensure data safety.
+- **Token-based Authentication**: Stateless authentication with JWT stored in HTTP-only cookies.
+- **Protected Routes**: Only authenticated users can access certain resources.
 
-### `npm start`
+## Technologies Used
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Backend**: Node.js, Express.js
+- **Frontend**: React
+- **Authentication**: Passport.js, JWT, OAuth2 (Google)
+- **Database**: PostgreSQL (AWS)
+- **Others**: bcrypt for password hashing, cookie-parser for handling cookies
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Getting Started
 
-### `npm test`
+### Prerequisites
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- **Node.js**: Version 14 or above
+- **PostgreSQL**: For storing user and task data
+- **npm**: Node Package Manager
 
-### `npm run build`
+### Installation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. Clone the repository:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+   ```bash
+   git clone https://github.com/oondels/taskly.git
+   cd taskly
+   ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+2. Install dependencies:
 
-### `npm run eject`
+   ```bash
+   npm install
+   ```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+3. Set up environment variables:
+   Create a `.env` file in the root directory with the following values:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+   ```env
+   PORT=3000
+   JWT_SECRET=your_jwt_secret
+   SESSION_SECRET=your_session_secret
+   GOOGLE_CLIENT_ID=your_google_client_id
+   GOOGLE_CLIENT_SECRET=your_google_client_secret
+   DATABASE_URL=your_database_url
+   NODE_ENV=development
+   ```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+4. Set up the database:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+   - Make sure PostgreSQL is installed and running.
+   - Create the necessary tables.
 
-## Learn More
+5. Start the application:
+   ```bash
+   npm start
+   ```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Usage
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- **Register/Login**: Users can register using their email/password or log in with their Google account.
+- **Manage Tasks**: Users can create, update, and delete their tasks.
+- **Authentication**: After login, users receive a JWT token, which is used for accessing protected routes.
 
-### Code Splitting
+## Project Structure
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- **server/**: Contains all backend code (Express.js routes, authentication, etc.).
+- **client/**: Contains all frontend code (React components).
+- **utils/**: Utility functions, including helpers for authentication and password validation.
+- **db/**: Database connection and queries.
 
-### Analyzing the Bundle Size
+## Future Improvements
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- **Add Role-Based Access Control (RBAC)**: To differentiate between different types of users (e.g., admin, user).
+- **Implement Notifications**: Notify users when tasks are due.
+- **Add Unit Testing**: Using Jest or Mocha for better reliability.
 
-### Making a Progressive Web App
+## Contributing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Feel free to open issues or submit pull requests. Contributions are welcome!
 
-### Advanced Configuration
+## License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This project is licensed under the MIT License. See the LICENSE file for details.
