@@ -1,7 +1,7 @@
 import { Link, Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import "./App.css";
 import { AuthProvider } from "./utils/auth";
-import ProtectedRoute from "./utils/ProtectedRoute";
+import ProtectedRoute from "./utils/protectedRoute";
 import Home from "./views/Home";
 import Login from "./views/Login";
 import Register from "./views/Register";
@@ -27,16 +27,7 @@ const App = () => {
           <main>
             <Routes>
               <Route path="/" element={<Home />} />
-
-              <Route
-                path="/tasks"
-                element={
-                  <ProtectedRoute>
-                    <TaskList />
-                  </ProtectedRoute>
-                }
-              />
-
+              <Route path="/tasks" element={<TaskList />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
             </Routes>

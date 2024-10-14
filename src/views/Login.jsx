@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import ip from "../ip";
+import { useAuth } from "../utils/auth";
 
 const Login = () => {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const { login } = useAuth();
 
   const data = {
     userEmail: username,
@@ -28,6 +30,7 @@ const Login = () => {
       })
       .then((data) => {
         alert(data.message);
+        login();
         console.log(data);
       })
       .catch((error) => {
