@@ -21,14 +21,18 @@
 header {
   position: absolute;
   top: 0;
+  background-color: #2b2b2e;
+  width: 100%;
 }
 
 header nav {
   display: flex;
   flex-direction: row;
   list-style: none;
-  justify-content: space-between;
+  justify-content: center;
+  font-size: 20px;
   align-items: center;
+  padding: 10px;
 }
 
 header nav a {
@@ -44,6 +48,60 @@ header nav a:hover {
   background-color: antiquewhite;
 }
 
+/* Estilos para o switch */
+.switch-container {
+  position: absolute;
+  right: 0;
+  top: 5px;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* O slider */
+.slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+/* Quando o switch estiver ativado */
+input:checked + .slider {
+  background-color: #3e3f3e;
+}
+
+input:checked + .slider:before {
+  transform: translateX(16px);
+}
+
 /* Main */
 main {
   width: 100%;
@@ -55,11 +113,13 @@ main {
   margin: 20px auto;
   padding: 20px;
   box-sizing: border-box;
+  margin-bottom: 80px;
 }
 
 /* TaskList */
 .tasks-container {
   max-width: 800px;
+  max-height: 600px;
   margin: 50px auto;
   padding: 30px;
   background-color: #2c2f33;
@@ -68,6 +128,15 @@ main {
   text-align: center;
   color: #ffffff;
   position: relative;
+}
+
+.add-task {
+  position: absolute;
+  left: 40px;
+  cursor: pointer;
+  font-size: 35px;
+  color: #41c748;
+  transition: transform 0.2s;
 }
 
 .tasks-title {
@@ -81,21 +150,11 @@ main {
   color: #aaaaaa;
 }
 
-.tasks-container .add-task {
-  position: absolute;
-  left: 20%;
-  cursor: pointer;
-  font-size: 35px;
-  position: fixed;
-  color: #41c748;
-  transition: transform 0.2s;
-}
-
 .add-task:hover {
   transform: scale(1.1);
 }
 .task-actions {
-  margin: 30px 0;
+  margin-top: 30px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -109,11 +168,11 @@ main {
 
 .search input {
   padding: 5px 15px;
+  width: auto;
   border-radius: 5px 0 0 5px;
   border: none;
   outline: none;
   font-size: 1em;
-  width: 250px;
 }
 
 .search i {
@@ -167,7 +226,6 @@ main {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  margin-bottom: 20px;
 }
 
 .task-title i {
@@ -257,6 +315,191 @@ main {
 
 .add-task-button:active {
   transform: translateY(1px);
+}
+
+/* Lista de Tasks */
+.task-list {
+  margin: 0 auto;
+  max-width: 500px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.task-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.task-list li {
+  display: grid;
+  grid-template-columns: 1fr 40px;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #1d1e1f;
+  font-size: 18px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.task-list li .task {
+  padding: 10px;
+  text-align: left;
+}
+
+.block-status-color {
+  width: 100%;
+  height: 100%;
+}
+
+.task-list li:hover {
+  background-color: #e0f7fa;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.task-list i {
+  font-size: 24px;
+  color: #ffd700;
+  margin-right: 10px;
+}
+
+.task-list span {
+  font-size: 18px;
+  color: #333;
+}
+
+/* Tasks Informations */
+.task-informations {
+  min-width: 400px;
+  padding: 10px 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  list-style-type: none;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.task-informations ul {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+
+.task-informations li {
+  margin-bottom: 15px;
+  border-bottom: 1px solid #ddd; /* Linha divisória entre os itens */
+  padding-bottom: 10px;
+}
+
+.task-informations li:last-child {
+  border-bottom: none; /* Remove a linha divisória do último item */
+}
+
+.task-informations h5 {
+  font-size: 16px;
+  margin: 0 0 5px 0;
+  color: #ffd700;
+}
+
+.task-informations p {
+  font-size: 14px;
+  color: #666;
+  margin: 5px 0 0; /* Espaçamento acima dos parágrafos */
+}
+
+.low {
+  background-color: green;
+}
+
+.below-average {
+  background-color: lightgreen;
+}
+
+.medium {
+  background-color: orange;
+}
+
+.above-average {
+  background-color: rgb(240, 97, 46);
+}
+
+.high {
+  background-color: rgb(212, 0, 0);
+}
+
+.bottom-line {
+  display: inline-block;
+  width: 100%;
+  height: 5px;
+}
+
+/* Overlay */
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  display: none;
+}
+
+#overlay.show {
+  display: block;
+  z-index: 999;
+}
+
+#alert-message {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, 50%) scale(0);
+  opacity: 0;
+  width: 400px;
+  background-color: #caffbc;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  text-align: center;
+  transition: all 0.4s ease-in-out;
+}
+
+#alert-message.show {
+  z-index: 2000;
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+#alert-message h1 {
+  font-size: 24px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+#alert-message p {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+#alert-message button {
+  background-color: #41c748;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#alert-message button:hover {
+  background-color: #36a43e;
 }
 
 /* Footer */

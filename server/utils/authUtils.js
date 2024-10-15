@@ -7,7 +7,7 @@ const findUser = async (userEmail) => {
     const user = await pool.query(
       `
     SELECT 
-        name, username, email, password
+        id, name, username, email, password
     FROM
         task_manager.users
     WHERE

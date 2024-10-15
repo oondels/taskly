@@ -140,7 +140,7 @@ router.post("/login", async (req, res) => {
     }
 
     const token = jwt.sign(
-      { username: user.username, name: user.name },
+      { username: user.username, name: user.name, id: user.id },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
@@ -168,14 +168,18 @@ router.post("/logout", async (req, res) => {});
 router.get("/check-auth", (req, res) => {
   const token = req.cookies.token;
   if (!token) {
-    return res.status(401).json({ authenticated: false });
+    return res
+      .status(401)
+      .json({ authenticated: false, message: "No token Provided" });
   }
 
   try {
-    jwt.verify(token, process.env.JWT_SECRET);
-    return res.status(200).json({ authenticated: true });
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    return res.status(200).json({ authenticated: true, user: decoded });
   } catch (err) {
-    return res.status(401).json({ authenticated: false });
+    return res
+      .status(401)
+      .json({ authenticated: false, message: "Error decodificating Token" });
   }
 });
 

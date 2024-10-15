@@ -1,3 +1,26 @@
 2024-10-12 22:59:03 [ERROR]: Error searching user: 
 2024-10-13 08:18:50 [ERROR]: Error during login: Cannot read properties of undefined (reading '0')
 2024-10-13 08:23:05 [ERROR]: Error during login: userEmail is not defined
+2024-10-15 13:42:41 [ERROR]: Error during post task: there is no parameter $1
+2024-10-15 13:43:55 [ERROR]: Error during post task: tata is not defined
+2024-10-15 13:46:41 [ERROR]: Error during post task: INSERT has more expressions than target columns
+2024-10-15 14:13:58 [ERROR]: Error getting tasks: invalid input syntax for type integer: "oeendel"
+2024-10-15 14:14:09 [ERROR]: Error getting tasks: invalid input syntax for type integer: "undefined"
+2024-10-15 14:14:10 [ERROR]: Error getting tasks: invalid input syntax for type integer: "undefined"
+2024-10-15 14:14:19 [ERROR]: Error getting tasks: invalid input syntax for type integer: "[object Object]"
+2024-10-15 14:14:25 [ERROR]: Error getting tasks: invalid input syntax for type integer: "oeendel"
+2024-10-15 14:15:50 [ERROR]: Error getting tasks: invalid input syntax for type integer: "undefined"
+2024-10-15 14:15:50 [ERROR]: Error getting tasks: invalid input syntax for type integer: "undefined"
+2024-10-15 14:16:23 [ERROR]: Error getting tasks: invalid input syntax for type integer: "undefined"
+2024-10-15 14:16:23 [ERROR]: Error getting tasks: invalid input syntax for type integer: "undefined"
+2024-10-15 15:04:56 [ERROR]: Error getting tasks: Connection terminated unexpectedly
+2024-10-15 16:29:27 [ERROR]: Error finishing task: invalid input syntax for type integer: "undefined"
+2024-10-15 16:29:29 [ERROR]: Error finishing task: invalid input syntax for type integer: "undefined"
+2024-10-15 16:29:41 [ERROR]: Error finishing task: invalid input syntax for type integer: "undefined"
+2024-10-15 16:29:42 [ERROR]: Error finishing task: invalid input syntax for type integer: "undefined"
+2024-10-15 16:30:15 [ERROR]: Error finishing task: invalid input syntax for type integer: "undefined"
+2024-10-15 16:30:15 [ERROR]: Error finishing task: invalid input syntax for type integer: "undefined"
+2024-10-15 16:30:23 [ERROR]: Error finishing task: invalid input syntax for type integer: "undefined"
+2024-10-15 16:30:24 [ERROR]: Error finishing task: invalid input syntax for type integer: "undefined"
+2024-10-15 16:31:13 [ERROR]: Error finishing task: invalid input syntax for type integer: "undefined"
+2024-10-15 16:31:13 [ERROR]: Error finishing task: invalid input syntax for type integer: "undefined"
