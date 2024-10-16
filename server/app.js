@@ -48,7 +48,7 @@ app.get("/get-tastks/:id", async (req, res) => {
         FROM 
           task_manager.tasks
         WHERE 
-          user_id = $1
+          user_id = $1 AND status != 'deleted'
         ORDER BY 
           due_date       
       `,
@@ -66,6 +66,31 @@ app.get("/get-tastks/:id", async (req, res) => {
   }
 });
 
+app.put("/start-task/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const query = await pool.query(
+      `
+        UPDATE task_manager.tasks
+        SET status = 'started', start_date = NOW()
+        WHERE id = $1
+        RETURNING *
+      `,
+      [id]
+    );
+    if (query.rows.length === 0) {
+      return res.status(400).json({ message: "Error Finishing Task" });
+    }
+
+    return res.status(200).json({ message: "Task Successfully Started" });
+  } catch (error) {
+    logger.error("Error finishing task: " + error.message);
+    console.error("Error finishing task: ", error.message);
+    return res.status(500).json({ message: "Erro interno no servidor" });
+  }
+});
+
 app.put("/finish-task/:id", async (req, res) => {
   try {
     const id = req.params.id;
@@ -73,7 +98,7 @@ app.put("/finish-task/:id", async (req, res) => {
     const query = await pool.query(
       `
         UPDATE task_manager.tasks
-        SET completed = true, completed_at = NOW()
+        SET status = 'finished', completed_at = NOW(), completed = true
         WHERE id = $1
         RETURNING *
       `,
@@ -84,6 +109,81 @@ app.put("/finish-task/:id", async (req, res) => {
     }
 
     return res.status(200).json({ message: "Task Successfully Finished" });
+  } catch (error) {
+    logger.error("Error finishing task: " + error.message);
+    console.error("Error finishing task: ", error.message);
+    return res.status(500).json({ message: "Erro interno no servidor" });
+  }
+});
+
+app.put("/resume-task/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const query = await pool.query(
+      `
+        UPDATE task_manager.tasks
+        SET status = 'started'
+        WHERE id = $1
+        RETURNING *
+      `,
+      [id]
+    );
+    if (query.rows.length === 0) {
+      return res.status(400).json({ message: "Error Resuming Task" });
+    }
+
+    return res.status(200).json({ message: "Task Successfully Resumed" });
+  } catch (error) {
+    logger.error("Error finishing task: " + error.message);
+    console.error("Error finishing task: ", error.message);
+    return res.status(500).json({ message: "Erro interno no servidor" });
+  }
+});
+
+app.put("/pause-task/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const query = await pool.query(
+      `
+        UPDATE task_manager.tasks
+        SET status = 'paused'
+        WHERE id = $1
+        RETURNING *
+      `,
+      [id]
+    );
+    if (query.rows.length === 0) {
+      return res.status(400).json({ message: "Error Pausing Task" });
+    }
+
+    return res.status(200).json({ message: "Task Successfully Paused" });
+  } catch (error) {
+    logger.error("Error finishing task: " + error.message);
+    console.error("Error finishing task: ", error.message);
+    return res.status(500).json({ message: "Erro interno no servidor" });
+  }
+});
+
+app.put("/delete-task/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const query = await pool.query(
+      `
+        UPDATE task_manager.tasks
+        SET status = 'deleted'
+        WHERE id = $1
+        RETURNING *
+      `,
+      [id]
+    );
+    if (query.rows.length === 0) {
+      return res.status(400).json({ message: "Error Deliting Task" });
+    }
+
+    return res.status(200).json({ message: "Task Successfully Deleted" });
   } catch (error) {
     logger.error("Error finishing task: " + error.message);
     console.error("Error finishing task: ", error.message);

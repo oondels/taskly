@@ -79,8 +79,8 @@ const TaskList = () => {
     getAllTasks();
   }, [user]);
 
-  const finishTask = async (id) => {
-    const response = await fetch(`${ip}/finish-task/${id}`, {
+  const updateTask = async (id, action) => {
+    const response = await fetch(`${ip}/${action}-task/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -88,13 +88,17 @@ const TaskList = () => {
     });
 
     if (!response.ok) {
-      console.error("Erro ao Finalizar Tarefa");
+      toggleAlert("Error", data.message);
+      console.error("Error Updating Task");
       return;
     }
 
     const data = await response.json();
-    toggleAlert();
-    console.log(data);
+    toggleAlert("Sucesso", data.message);
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 2000);
   };
 
   const handleTitle = (e) => {
@@ -134,7 +138,15 @@ const TaskList = () => {
     setShowForm(!showForm);
   };
 
-  const toggleAlert = () => {
+  const toggleAlert = (title, message) => {
+    const alertTitle = document.querySelector(".alert-title");
+    const alertMessage = document.querySelector(".alert-message");
+
+    if (title && message) {
+      alertTitle.innerText = title;
+      alertMessage.innerText = message;
+    }
+
     setAlert(!showAlert);
   };
 
@@ -202,6 +214,26 @@ const TaskList = () => {
       default:
         return "Unknown";
     }
+  };
+
+  const formatteDate = (taskDate) => {
+    const date = new Date(taskDate);
+    const formattedDate = date.toLocaleDateString("pt-BR");
+    return formattedDate;
+  };
+
+  const setNotificationIcon = (targetDate) => {
+    const today = new Date();
+    const target = new Date(targetDate);
+
+    today.setHours(0, 0, 0, 0);
+    target.setHours(0, 0, 0, 0);
+
+    const diff = target - today; //Milliseconds
+    const diffInDays = diff / (1000 * 60 * 60 * 24);
+
+    if (diffInDays >= 0 && diffInDays <= 2) return "notifications";
+    if (diffInDays < 0) return "warning";
   };
 
   return (
@@ -292,18 +324,41 @@ const TaskList = () => {
           {tasks && tasks.data.length > 0 ? (
             tasks.data.map((task) => (
               <div key={task.id}>
-                <li onClick={() => handleClickOpen(task.id)}>
+                <li
+                  onClick={() => handleClickOpen(task.id)}
+                  className={`${task.status}`}
+                >
                   {/* Passa o ID da tarefa clicada */}
                   <div className="task">
                     <i className="material-symbols-outlined">task</i>
-                    {task.title}
+                    <p>{task.title}</p>
                   </div>
 
-                  <div
-                    className={`block-status-color ${setPriorityStatus(
-                      task.priority
-                    )}`}
-                  ></div>
+                  {task && task.status === "pending" && (
+                    <div
+                      className={`block-status-color ${setPriorityStatus(
+                        task.priority
+                      )}`}
+                    >
+                      <span class="material-symbols-outlined">
+                        {setNotificationIcon(task.due_date)}
+                      </span>
+                    </div>
+                  )}
+
+                  {task && task.status === "finished" && (
+                    <div className="delete-task">
+                      <span
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          updateTask(task.id, "delete");
+                        }}
+                        class="material-symbols-outlined delete"
+                      >
+                        delete
+                      </span>
+                    </div>
+                  )}
                 </li>
 
                 {/* O diálogo será aberto apenas se o task.id for igual ao openTaskId */}
@@ -329,7 +384,7 @@ const TaskList = () => {
                           </li>
                           <li>
                             <h5>Due Date:</h5>
-                            <p>{task.due_date}</p>
+                            <p>{formatteDate(task.due_date)}</p>
                           </li>
                           <li>
                             <h5>Status:</h5>
@@ -347,14 +402,36 @@ const TaskList = () => {
                     <Button onClick={handleClose} color="primary">
                       Fechar
                     </Button>
-                    <Button
-                      onClick={() => {
-                        finishTask(task.id);
-                      }}
-                      color="success"
-                    >
-                      Concluir
-                    </Button>
+
+                    {task && task.status !== "finished" && (
+                      <>
+                        <Button
+                          onClick={() => {
+                            updateTask(
+                              task.id,
+                              task.status === "pending" ? "start" : "finish"
+                            );
+                          }}
+                          color="success"
+                        >
+                          {task.status === "pending" ? "Start" : "Finish"}
+                        </Button>
+
+                        {task.status !== "pending" && (
+                          <Button
+                            onClick={() => {
+                              updateTask(
+                                task.id,
+                                task.status === "paused" ? "resume" : "pause"
+                              );
+                            }}
+                            color="success"
+                          >
+                            {task.status === "paused" ? "Resume" : "Pause"}
+                          </Button>
+                        )}
+                      </>
+                    )}
                   </DialogActions>
                 </Dialog>
               </div>
@@ -367,13 +444,8 @@ const TaskList = () => {
 
       <div id="overlay" className={`${showForm ? "show" : ""}`}></div>
       <div id="alert-message" className={`${showAlert ? "show" : ""}`}>
-        <h1>Mensagem Apareceu com suceosso</h1>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim quam
-          numquam, quisquam iste laborum laboriosam beatae aut, modi quidem
-          blanditiis reiciendis, dolore odio est a. Modi rem perspiciatis
-          consequatur harum.
-        </p>
+        <h1 className="alert-title">Sucesso</h1>
+        <p className="alert-message"></p>
         <button onClick={toggleAlert}>Fechar</button>
       </div>
     </div>

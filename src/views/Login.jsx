@@ -39,9 +39,10 @@ const Login = () => {
   };
 
   return (
-    <div>
+    <div className="login-container">
       <h1>Login</h1>
-      <div className="login-container">
+
+      <div className="login-input">
         <input
           onChange={(e) => setUserName(e.target.value)}
           value={username}
