@@ -9,7 +9,7 @@ const Navbar = () => {
 
   return (
     <header>
-      <span onClick={test} class="material-symbols-outlined menu-icon">
+      <span onClick={test} className="material-symbols-outlined menu-icon">
         menu
       </span>
       <nav>
@@ -21,6 +21,7 @@ const Navbar = () => {
         </div>
 
         <span className="switch-container">
+          <button>Logout</button>
           <label className="switch">
             <input type="checkbox" id="mode-switch" />
             <span className="slider"></span>

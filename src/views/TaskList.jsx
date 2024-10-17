@@ -340,7 +340,7 @@ const TaskList = () => {
                         task.priority
                       )}`}
                     >
-                      <span class="material-symbols-outlined">
+                      <span className="material-symbols-outlined">
                         {setNotificationIcon(task.due_date)}
                       </span>
                     </div>
@@ -353,7 +353,7 @@ const TaskList = () => {
                           event.stopPropagation();
                           updateTask(task.id, "delete");
                         }}
-                        class="material-symbols-outlined delete"
+                        className="material-symbols-outlined delete"
                       >
                         delete
                       </span>

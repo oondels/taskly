@@ -38,6 +38,10 @@ const Login = () => {
       });
   };
 
+  const handleLogin = () => {
+    window.location.href = "http://localhost:2399/auth/google";
+  };
+
   return (
     <div className="login-container">
       <h1>Login</h1>
@@ -49,13 +53,19 @@ const Login = () => {
           type="text"
           placeholder="Username or Email"
         />
+
         <input
           onChange={(e) => setPassword(e.target.value)}
           value={password}
           type="password"
           placeholder="Password"
         />
+
         <button onClick={loginUser}>Login</button>
+
+        <button onClick={handleLogin} className="google-login-button">
+          <i className="material-icons">account_circle</i> Login with Google
+        </button>
       </div>
     </div>
   );
