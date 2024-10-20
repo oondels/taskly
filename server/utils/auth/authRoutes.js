@@ -21,10 +21,64 @@ passport.use(
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: "/auth/google/callback",
     },
-    (accessToken, refreshToken, profile, done) => {
+    async (accessToken, refreshToken, profile, done) => {
+      let normalizedName = profile.displayName
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
+
+      const username =
+        normalizedName.split(" ")[0] +
+        "." +
+        normalizedName.split(" ")[normalizedName.split(" ").length - 1];
+
+      const checkUser = await pool.query(
+        `
+          SELECT
+              g.email, g.username, g.id, g.name, u.user_google, u.id
+          FROM
+              task_manager.google_users g
+          INNER JOIN
+              task_manager.users u ON u.user_google = g.id
+          WHERE
+              g.email = $1
+      `,
+        [profile.emails[0].value]
+      );
+
+      let newUser;
+      if (!checkUser.rows.length > 0) {
+        const userGoogle = await pool.query(
+          `
+          INSERT INTO
+            task_manager.google_users (username, name, email, google_id)
+          VALUES ($1, $2, $3, $4)
+          RETURNING *;
+          `,
+          [username, profile.displayName, profile.emails[0].value, profile.id]
+        );
+
+        newUser = await pool.query(
+          `
+          INSERT INTO
+            task_manager.users (username, name, email, user_google)
+          VALUES ($1, $2, $3, $4)
+          RETURNING *;
+          `,
+          [
+            username,
+            profile.displayName,
+            profile.emails[0].value,
+            userGoogle.rows[0].id,
+          ]
+        );
+      }
+
       const user = {
+        username: username,
+        id: newUser ? newUser.rows[0].id : checkUser.rows[0].id,
         googleId: profile.id,
-        displayName: profile.displayName,
+        name: profile.displayName,
         email: profile.emails[0].value,
       };
 
@@ -46,7 +100,7 @@ router.get(
 router.get(
   "/google/callback",
   passport.authenticate("google", { session: false }),
-  (req, res) => {
+  async (req, res) => {
     res.cookie("token", req.user.token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

@@ -34,7 +34,7 @@ const Login = () => {
         console.log(data);
       })
       .catch((error) => {
-        console.error("Erro ao efetuar login: ", error);
+        console.error("Error at login: ", error);
       });
   };
 
@@ -44,28 +44,38 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      <h1>Login</h1>
+      <div className="login-box">
+        <h1 className="login-title">Welcome Back!</h1>
+        <p className="login-subtitle">Sign in to continue</p>
 
-      <div className="login-input">
-        <input
-          onChange={(e) => setUserName(e.target.value)}
-          value={username}
-          type="text"
-          placeholder="Username or Email"
-        />
+        <div className="login-input">
+          <input
+            onChange={(e) => setUserName(e.target.value)}
+            value={username}
+            type="text"
+            placeholder="Username or Email"
+          />
 
-        <input
-          onChange={(e) => setPassword(e.target.value)}
-          value={password}
-          type="password"
-          placeholder="Password"
-        />
+          <input
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
+            type="password"
+            placeholder="Password"
+          />
 
-        <button onClick={loginUser}>Login</button>
+          <button onClick={loginUser} className="login-button">
+            Login
+          </button>
 
-        <button onClick={handleLogin} className="google-login-button">
-          <i className="material-icons">account_circle</i> Login with Google
-        </button>
+          <button onClick={handleLogin} className="google-login-button">
+            <img
+              src="https://developers.google.com/identity/images/g-logo.png"
+              alt="Google Logo"
+              className="google-logo"
+            />
+            Sign in with Google
+          </button>
+        </div>
       </div>
     </div>
   );

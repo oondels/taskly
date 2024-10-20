@@ -156,6 +156,7 @@ const TaskList = () => {
       description: description,
       priority: priority,
       date: date,
+      googleId: user.googleId,
       userId: user.id,
     };
 
@@ -169,13 +170,17 @@ const TaskList = () => {
       .then(async (response) => {
         if (!response.ok) {
           const errorData = await response.json();
+          toggleAlert("Error", errorData.message);
           throw new Error(`Failed to post task: ${errorData.message}`);
         }
 
         return await response.json();
       })
       .then((data) => {
-        console.log(data.message);
+        toggleAlert("Success", data.message);
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
       })
       .catch((error) => {
         console.error(error);
