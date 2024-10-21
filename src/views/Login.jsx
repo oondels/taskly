@@ -1,11 +1,14 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ip from "../ip";
 import { useAuth } from "../utils/auth";
 
 const Login = () => {
   const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
+
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const data = {
     userEmail: username,
@@ -29,9 +32,11 @@ const Login = () => {
         return response.json();
       })
       .then((data) => {
-        alert(data.message);
+        toggleAlert("Success", data.message);
         login();
-        console.log(data);
+        setTimeout(() => {
+          navigate("/tasks");
+        }, 1500);
       })
       .catch((error) => {
         console.error("Error at login: ", error);
@@ -40,6 +45,19 @@ const Login = () => {
 
   const handleLogin = () => {
     window.location.href = "http://localhost:2399/auth/google";
+  };
+
+  const [showAlert, setAlert] = useState(false);
+  const toggleAlert = (title, message) => {
+    const alertTitle = document.querySelector(".alert-title");
+    const alertMessage = document.querySelector(".alert-message");
+
+    if (title && message) {
+      alertTitle.innerText = title;
+      alertMessage.innerText = message;
+    }
+
+    setAlert(!showAlert);
   };
 
   return (
@@ -76,6 +94,12 @@ const Login = () => {
             Sign in with Google
           </button>
         </div>
+      </div>
+
+      <div id="alert-message" className={`${showAlert ? "show" : ""}`}>
+        <h1 className="alert-title">Sucesso</h1>
+        <p className="alert-message"></p>
+        <button onClick={toggleAlert}>Fechar</button>
       </div>
     </div>
   );

@@ -277,6 +277,7 @@ router.post("/login", async (req, res) => {
         name: user.name,
         id: user.id,
         account_validation: user.account_validation,
+        email: user.email,
       },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
@@ -300,7 +301,16 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/logout", async (req, res) => {});
+router.get("/logout", async (req, res) => {
+  res.cookie("token", "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 0,
+    path: "/",
+  });
+  res.status(200).json({ message: "Successfully Logout" });
+});
 
 router.get("/check-auth", (req, res) => {
   const token = req.cookies.token;
@@ -318,6 +328,69 @@ router.get("/check-auth", (req, res) => {
       .status(401)
       .json({ authenticated: false, message: "Error decodificating Token" });
   }
+});
+
+router.get("/resend-email", async (req, res) => {
+  const id = req.query.id;
+  const username = req.query.username;
+  const email = req.query.email;
+
+  const verificationToken = jwt.sign(
+    {
+      id: id,
+      username: username,
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
+  );
+
+  const verificationLink = `${ip}/auth/verify-email?token=${verificationToken}`;
+
+  await transporter
+    .sendMail({
+      to: email,
+      subject: `Email Verification - Taskly`,
+      html: `
+      <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <h1 style="color: #0d9757; font-size: 24px; margin: 0;">Welcome to Taskly!</h1>
+          </div>
+
+          <div style="background-color: #ffffff; padding: 20px; border-radius: 8px; border: 1px solid #e0e0e0;">
+            <h2 style="color: #0056b3; font-size: 20px; margin: 0 0 10px;">Hello <strong>${username}</strong>,</h2>
+            <p style="font-size: 16px; color: #555; margin: 10px 0;">Thank you for creating an account with Taskly. We're excited to have you onboard!</p>
+
+            <p style="font-size: 16px; color: #555; margin-top: 20px;">You can now start managing your tasks efficiently using Taskly.</p>
+
+            <div style="text-align: center; margin-top: 30px;">
+              <a href="${verificationLink}" style="background-color: #3f51b5; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 8px; font-size: 16px;">Click Here To Activate Your Account!</a>
+            </div>
+          </div>
+
+          <div style="text-align: center; margin-top: 30px; color: #777; font-size: 14px;">
+            <p>This email was generated automatically. Please do not reply.</p>
+          </div>
+        </div>
+      `,
+    })
+    .then(() => {
+      console.log("Email sent");
+      return res.status(201).json({
+        message:
+          "Registered Successfully. You received an Email to cofirm your account.",
+        error: false,
+      });
+    })
+    .catch((error) => {
+      console.error("Error sending email: ", error);
+      logger.error("Error sending email: " + error.message);
+
+      return res.status(400).json({
+        message:
+          "Error sending email verification, please check if your email is correct.",
+        error: true,
+      });
+    });
 });
 
 // Continuar Daqui

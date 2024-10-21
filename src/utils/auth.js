@@ -6,6 +6,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [user, putUser] = useState(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -31,14 +32,8 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("authenticated", "true");
   };
 
-  const logout = () => {
-    setAuth(false);
-    localStorage.removeItem("authenticated");
-    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  };
-
   return (
-    <AuthContext.Provider value={{ auth, login, logout, loading }}>
+    <AuthContext.Provider value={{ auth, login, loading, user, putUser }}>
       {children}
     </AuthContext.Provider>
   );

@@ -10,7 +10,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
 const TaskList = () => {
-  const { auth } = useAuth(); // Verifica se o usuário está autenticado
+  const { auth, putUser } = useAuth(); // Verifica se o usuário está autenticado
 
   const [user, setUser] = useState("");
   const [tasks, setTasks] = useState(null);
@@ -31,6 +31,38 @@ const TaskList = () => {
     setOpenTaskId(null);
   };
 
+  const resendEmail = async () => {
+    if (user) {
+      console.log(user);
+      try {
+        const response = await fetch(
+          `${ip}/auth/resend-email?username=${user.username}&id=${user.id}&email=${user.email}`,
+          {
+            credentials: "include",
+          }
+        );
+
+        if (!response.ok) {
+          response.json().then((errorData) => {
+            console.error("Error at sending email: ", errorData);
+            return toggleAlert(
+              "Error",
+              errorData.message || "Error at sending email!"
+            );
+          });
+        }
+        const responseData = await response.json();
+        return toggleAlert(
+          "Success",
+          responseData.message || "Email sent successfully"
+        );
+      } catch (error) {
+        console.error("Error occurred during resend email: ", error);
+        return toggleAlert("Error", `Error Sending Email: ${error.message}`);
+      }
+    }
+  };
+
   useEffect(() => {
     const getUserData = async () => {
       try {
@@ -45,6 +77,7 @@ const TaskList = () => {
         console.log(userData);
 
         setUser(userData.user);
+        putUser(userData.user);
       } catch (error) {
         console.error("Error getting user data: ", error);
       }
@@ -455,13 +488,15 @@ const TaskList = () => {
         <button onClick={toggleAlert}>Fechar</button>
       </div>
 
-      <div className="warning-account-not-verified">
-        <h1>You must to verify your account</h1>
-        <p>
-          Checkout your email imbox, if doesnot have, click in the link bellow
-        </p>
-        <button>Send Verification Link</button>
-      </div>
+      {user && user.account_validation == false && (
+        <div className="warning-account-not-verified">
+          <h1>You must to verify your account</h1>
+          <p>
+            Checkout your email imbox, if doesnot have, click in the link bellow
+          </p>
+          <button onClick={resendEmail}>Send Verification Link</button>
+        </div>
+      )}
     </div>
   );
 };

@@ -7,8 +7,8 @@ const Footer = () => {
         </p>
         <ul className="footer-links">
           <li>
-            <a href="https://www.hendriusfelix.com.br/" target="_blank">
-              Contact Us
+            <a href="https://hendriusfelix.com.br/" target="_blank">
+              Dev Contact
             </a>
           </li>
           <li>

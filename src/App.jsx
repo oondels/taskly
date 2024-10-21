@@ -5,6 +5,8 @@ import ProtectedRoute from "./utils/protectedRoute";
 
 import Footer from "./components/Footer";
 import Navbar from "./components/NavBar";
+import EmailVerification from "./views/EmailVerification";
+import EmailVerificationFailed from "./views/EmailVerificationFailed";
 import Home from "./views/Home";
 import Login from "./views/Login";
 import Register from "./views/Register";
@@ -31,6 +33,14 @@ const App = () => {
               />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route
+                path="/email-verification"
+                element={<EmailVerification />}
+              />
+              <Route
+                path="/email-verification-failed"
+                element={<EmailVerificationFailed />}
+              />
             </Routes>
           </main>
 

@@ -80,3 +80,5 @@
 2024-10-20 18:45:30 [ERROR]: Error sending email: Missing credentials for "PLAIN"
 2024-10-20 18:45:30 [ERROR]: Error to register: Cannot set headers after they are sent to the client
 2024-10-20 18:49:39 [ERROR]: Error to register: Cannot set headers after they are sent to the client
+2024-10-21 08:45:58 [ERROR]: Error sending email: Missing credentials for "PLAIN"
+2024-10-21 08:46:32 [ERROR]: Error sending email: Missing credentials for "PLAIN"
