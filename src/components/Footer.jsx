@@ -7,12 +7,6 @@ const Footer = () => {
         </p>
         <ul className="footer-links">
           <li>
-            <a href="#">Privacy Policy</a>
-          </li>
-          <li>
-            <a href="#">Terms of Service</a>
-          </li>
-          <li>
             <a href="https://www.hendriusfelix.com.br/" target="_blank">
               Contact Us
             </a>
