@@ -58,6 +58,27 @@ passport.use(
         [profile.emails[0].value]
       );
 
+      const checkEmail = await pool.query(
+        `
+          SELECT *
+          FROM
+              task_manager.google_users g
+          INNER JOIN
+              task_manager.users u ON u.email = g.email
+          WHERE
+              g.email = $1
+      `,
+        [profile.emails[0].value]
+      );
+
+      // Verificar Funcionalidade
+      if (checkEmail.rows.length > 0) {
+        return done(
+          new Error("A user already has an account with this email"),
+          null
+        );
+      }
+
       let newUser;
       if (!checkUser.rows.length > 0) {
         const userGoogle = await pool.query(
