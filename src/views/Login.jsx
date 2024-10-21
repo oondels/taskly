@@ -44,7 +44,7 @@ const Login = () => {
 
   return (
     <div className="login-container">
-      <div className="login-box">
+      <div className="login-box box">
         <h1 className="login-title">Welcome Back!</h1>
         <p className="login-subtitle">Sign in to continue</p>
 

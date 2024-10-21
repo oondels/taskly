@@ -45,13 +45,22 @@ const Register = () => {
     })
       .then((response) => {
         if (!response.ok) {
-          console.error("Error at register solicitation: ", error);
-          return toggleAlert("Error", "Error at register solicitation!");
+          response.json().then((errorData) => {
+            console.error("Error at register solicitation: ", errorData);
+            return toggleAlert(
+              "Error",
+              errorData.message || "Error at register solicitation!"
+            );
+          });
         }
-
         return response.json();
       })
       .then((data) => {
+        console.log(data);
+
+        if (data.error) {
+          return toggleAlert("Error", data.message);
+        }
         toggleAlert("Success", data.message);
 
         setTimeout(() => {
@@ -69,47 +78,58 @@ const Register = () => {
 
   return (
     <div className="register-container">
-      <h1>Register</h1>
+      <div className="register-box box">
+        <h1 className="register-title">Create Account</h1>
+        <p className="register-subtitle">Sign up to get started</p>
 
-      <div className="register-input">
-        <input
-          onChange={(e) => setName(e.target.value)}
-          value={name}
-          type="text"
-          placeholder="Full Name"
-        />
-        <input
-          onChange={(e) => setUserName(e.target.value)}
-          value={username}
-          type="text"
-          placeholder="Username"
-        />
-        <input
-          onChange={(e) => setEmail(e.target.value)}
-          value={email}
-          type="email"
-          placeholder="Email"
-        />
-        <input
-          onChange={(e) => setPassword(e.target.value)}
-          value={password}
-          type="password"
-          placeholder="Password"
-        />
-        <button onClick={registerUser}>Register</button>
-        <button
-          onClick={handleGoogleRegister}
-          className="google-register-button"
-        >
-          <i className="material-symbols-outlined">account_circle</i>
-          Register with Google
-        </button>
+        <div className="register-input">
+          <input
+            onChange={(e) => setName(e.target.value)}
+            value={name}
+            type="text"
+            placeholder="Name"
+          />
+          <input
+            onChange={(e) => setUserName(e.target.value)}
+            value={username}
+            type="text"
+            placeholder="Username"
+          />
+          <input
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
+            type="email"
+            placeholder="Email"
+          />
+          <input
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
+            type="password"
+            placeholder="Password"
+          />
+
+          <button onClick={registerUser} className="register-button">
+            Register
+          </button>
+
+          <button
+            onClick={handleGoogleRegister}
+            className="google-register-button"
+          >
+            <img
+              src="https://developers.google.com/identity/images/g-logo.png"
+              alt="Google Logo"
+              className="google-logo"
+            />
+            Sign up with Google
+          </button>
+        </div>
       </div>
 
       <div id="alert-message" className={`${showAlert ? "show" : ""}`}>
         <h1 className="alert-title">Success</h1>
         <p className="alert-message"></p>
-        <button onClick={toggleAlert}>Close</button>
+        <button onClick={() => toggleAlert()}>Close</button>
       </div>
     </div>
   );

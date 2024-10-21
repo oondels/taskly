@@ -18,7 +18,7 @@ const TaskList = () => {
 
   const [showForm, setShowForm] = useState(false);
   const [showAlert, setAlert] = useState(false);
-  const [priority, setPriority] = useState(1); // Ajuste inicial para corresponder ao valor mínimo do input
+  const [priority, setPriority] = useState(1);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
@@ -42,6 +42,7 @@ const TaskList = () => {
           return;
         }
         const userData = await response.json();
+        console.log(userData);
 
         setUser(userData.user);
       } catch (error) {
@@ -452,6 +453,14 @@ const TaskList = () => {
         <h1 className="alert-title">Sucesso</h1>
         <p className="alert-message"></p>
         <button onClick={toggleAlert}>Fechar</button>
+      </div>
+
+      <div className="warning-account-not-verified">
+        <h1>You must to verify your account</h1>
+        <p>
+          Checkout your email imbox, if doesnot have, click in the link bellow
+        </p>
+        <button>Send Verification Link</button>
       </div>
     </div>
   );

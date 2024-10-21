@@ -70,3 +70,13 @@
 2024-10-20 11:11:50 [ERROR]: Error getting tasks: invalid input syntax for type integer: "undefined"
 2024-10-20 11:12:23 [ERROR]: Error getting tasks: invalid input syntax for type integer: "undefined"
 2024-10-20 11:12:24 [ERROR]: Error getting tasks: invalid input syntax for type integer: "undefined"
+2024-10-20 17:43:32 [ERROR]: Error to register: syntax error at or near ","
+2024-10-20 17:44:44 [ERROR]: Error to register: Invalid salt version: 8
+2024-10-20 17:45:55 [ERROR]: Error to register: Invalid salt version: 8
+2024-10-20 18:41:35 [ERROR]: Error sending email: Missing credentials for "PLAIN"
+2024-10-20 18:41:35 [ERROR]: Error to register: Cannot set headers after they are sent to the client
+2024-10-20 18:44:08 [ERROR]: Error sending email: Missing credentials for "PLAIN"
+2024-10-20 18:44:08 [ERROR]: Error to register: Cannot set headers after they are sent to the client
+2024-10-20 18:45:30 [ERROR]: Error sending email: Missing credentials for "PLAIN"
+2024-10-20 18:45:30 [ERROR]: Error to register: Cannot set headers after they are sent to the client
+2024-10-20 18:49:39 [ERROR]: Error to register: Cannot set headers after they are sent to the client
