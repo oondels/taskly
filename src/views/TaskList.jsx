@@ -18,7 +18,7 @@ const TaskList = () => {
 
   const [showForm, setShowForm] = useState(false);
   const [showAlert, setAlert] = useState(false);
-  const [priority, setPriority] = useState(1); // Ajuste inicial para corresponder ao valor mínimo do input
+  const [priority, setPriority] = useState(1);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
@@ -42,6 +42,7 @@ const TaskList = () => {
           return;
         }
         const userData = await response.json();
+        console.log(userData);
 
         setUser(userData.user);
       } catch (error) {
@@ -156,6 +157,7 @@ const TaskList = () => {
       description: description,
       priority: priority,
       date: date,
+      googleId: user.googleId,
       userId: user.id,
     };
 
@@ -169,13 +171,17 @@ const TaskList = () => {
       .then(async (response) => {
         if (!response.ok) {
           const errorData = await response.json();
+          toggleAlert("Error", errorData.message);
           throw new Error(`Failed to post task: ${errorData.message}`);
         }
 
         return await response.json();
       })
       .then((data) => {
-        console.log(data.message);
+        toggleAlert("Success", data.message);
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
       })
       .catch((error) => {
         console.error(error);
@@ -447,6 +453,14 @@ const TaskList = () => {
         <h1 className="alert-title">Sucesso</h1>
         <p className="alert-message"></p>
         <button onClick={toggleAlert}>Fechar</button>
+      </div>
+
+      <div className="warning-account-not-verified">
+        <h1>You must to verify your account</h1>
+        <p>
+          Checkout your email imbox, if doesnot have, click in the link bellow
+        </p>
+        <button>Send Verification Link</button>
       </div>
     </div>
   );
