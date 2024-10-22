@@ -1,24 +1,27 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import ip from "../ip";
 
 const EmailVerified = () => {
-  const navigate = useNavigate();
+  const [showAlert, setAlert] = useState(false);
+  const toggleAlert = (title, message) => {
+    const alertTitle = document.querySelector(".alert-title");
+    const alertMessage = document.querySelector(".alert-message");
 
-  const handleGoToLogin = () => {
-    navigate("/login");
+    if (title && message) {
+      alertTitle.innerText = title;
+      alertMessage.innerText = message;
+    }
+
+    setAlert(!showAlert);
   };
 
   return (
     <div className="email-verified-container">
       <div className="email-verified-box box">
-        <h1 className="email-verified-title">Email Verification Successful!</h1>
+        <h1 className="email-verified-title-failed">The Token has expired!</h1>
         <p className="email-verified-message">
-          Thank you for verifying your email. Your account is now active and you
-          can log in to access all features.
+          Log in, and Request a new confirmation link.
         </p>
-        <button onClick={handleGoToLogin} className="email-verified-button">
-          Go to Login
-        </button>
       </div>
     </div>
   );

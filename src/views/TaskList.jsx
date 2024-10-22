@@ -439,7 +439,7 @@ const TaskList = () => {
                   </DialogContent>
                   <DialogActions>
                     <Button onClick={handleClose} color="primary">
-                      Fechar
+                      Close
                     </Button>
 
                     {task && task.status !== "finished" && (

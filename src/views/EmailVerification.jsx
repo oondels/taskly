@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 const EmailVerified = () => {
   const navigate = useNavigate();
 
-  const handleGoToLogin = () => {
+  const handleHome = () => {
     navigate("/login");
   };
 
@@ -16,7 +16,7 @@ const EmailVerified = () => {
           Thank you for verifying your email. Your account is now active and you
           can log in to access all features.
         </p>
-        <button onClick={handleGoToLogin} className="email-verified-button">
+        <button onClick={handleHome} className="email-verified-button">
           Go to Login
         </button>
       </div>

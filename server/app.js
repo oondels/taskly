@@ -191,6 +191,36 @@ app.put("/delete-task/:id", async (req, res) => {
   }
 });
 
+app.put("/update-profile", async (req, res) => {
+  const { newName, newUserName, oldPass, newPass, repeatPass } = req.body;
+  const details = {
+    newName: "name",
+    newUsername: "username",
+    oldPass: "password",
+  };
+
+  let query = `UPDATE task_manager SET `;
+  Object.keys(req.body).forEach((key, index, array) => {
+    if (index === array.length - 1) {
+      query += `${details[key]}`;
+    } else {
+      query += `${details[key]}, `;
+    }
+  });
+
+  // Continuar Daqui
+  if (oldPass) {
+    if (!newPass || !repeatPass) {
+      console.log("Insira todos os dados da senha");
+      return res
+        .status(403)
+        .json({ message: "You must to insert all passwrod data" });
+    }
+  }
+  console.log(query);
+  res.json({ message: "Recebido" });
+});
+
 app.post("/post-task", async (req, res) => {
   try {
     const data = req.body;

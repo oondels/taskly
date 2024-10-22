@@ -51,8 +51,12 @@ const Navbar = () => {
         <div className="links">
           <Link to="/">Home</Link>
           <Link to="/tasks">Task List</Link>
-          <Link to="/login">Login</Link>
-          <Link to="/register">Register</Link>
+          {!user && (
+            <>
+              <Link to="/login">Login</Link>
+              <Link to="/register">Register</Link>
+            </>
+          )}
         </div>
 
         <span className="switch-container">
@@ -74,7 +78,11 @@ const Navbar = () => {
 
               <div className={`profile-menu ${isMenuOpen ? "show" : ""}`}>
                 <ul className={`${isMenuOpen ? "show" : ""}`}>
-                  <li>Profile</li>
+                  <li>
+                    <Link to="/profile" state={{ user: user }}>
+                      Profile
+                    </Link>
+                  </li>
                   <li onClick={logout}>Logout</li>
                 </ul>
               </div>

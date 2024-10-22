@@ -11,6 +11,7 @@ import Home from "./views/Home";
 import Login from "./views/Login";
 import Register from "./views/Register";
 import TaskList from "./views/TaskList";
+import UserProfile from "./views/user/UserProfile";
 
 const App = () => {
   return (
@@ -37,10 +38,12 @@ const App = () => {
                 path="/email-verification"
                 element={<EmailVerification />}
               />
+
               <Route
                 path="/email-verification-failed"
                 element={<EmailVerificationFailed />}
               />
+              <Route path="/profile" element={<UserProfile />} />
             </Routes>
           </main>
 

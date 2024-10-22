@@ -34,18 +34,48 @@ passport.use(
       callbackURL: "/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
-      let normalizedName = profile.displayName
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toLowerCase();
+      try {
+        let normalizedName = profile.displayName
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase();
 
-      const username =
-        normalizedName.split(" ")[0] +
-        "." +
-        normalizedName.split(" ")[normalizedName.split(" ").length - 1];
+        const username =
+          normalizedName.split(" ")[0] +
+          "." +
+          normalizedName.split(" ")[normalizedName.split(" ").length - 1];
 
-      const checkUser = await pool.query(
-        `
+        const checkEmail = await pool.query(
+          `
+        SELECT *
+        FROM
+            task_manager.users
+        WHERE
+            email = $1
+        `,
+          [profile.emails[0].value]
+        );
+
+        if (checkEmail.rows.length > 0) {
+          const userData = checkEmail.rows[0];
+          const user = {
+            username: username,
+            id: userData.id,
+            googleId: profile.id,
+            name: userData.name,
+            email: userData.email,
+            account_validation: userData.account_validation,
+          };
+
+          const token = jwt.sign(user, process.env.JWT_SECRET, {
+            expiresIn: "1h",
+          });
+
+          return done(null, { user, token });
+        }
+
+        const checkUser = await pool.query(
+          `
           SELECT
               g.email, g.username, g.id, g.name, u.user_google, u.id, u.account_validation
           FROM
@@ -55,74 +85,58 @@ passport.use(
           WHERE
               g.email = $1
       `,
-        [profile.emails[0].value]
-      );
-
-      const checkEmail = await pool.query(
-        `
-          SELECT *
-          FROM
-              task_manager.google_users g
-          INNER JOIN
-              task_manager.users u ON u.email = g.email
-          WHERE
-              g.email = $1
-      `,
-        [profile.emails[0].value]
-      );
-
-      // Verificar Funcionalidade
-      if (checkEmail.rows.length > 0) {
-        return done(
-          new Error("A user already has an account with this email"),
-          null
+          [profile.emails[0].value]
         );
-      }
 
-      let newUser;
-      if (!checkUser.rows.length > 0) {
-        const userGoogle = await pool.query(
-          `
+        let newUser;
+        if (!checkUser.rows.length > 0) {
+          const userGoogle = await pool.query(
+            `
           INSERT INTO
             task_manager.google_users (username, name, email, google_id)
           VALUES ($1, $2, $3, $4)
           RETURNING *;
           `,
-          [username, profile.displayName, profile.emails[0].value, profile.id]
-        );
+            [username, profile.displayName, profile.emails[0].value, profile.id]
+          );
 
-        newUser = await pool.query(
-          `
+          newUser = await pool.query(
+            `
           INSERT INTO
             task_manager.users (username, name, email, user_google, account_validation)
           VALUES ($1, $2, $3, $4, true)
           RETURNING *;
           `,
-          [
-            username,
-            profile.displayName,
-            profile.emails[0].value,
-            userGoogle.rows[0].id,
-          ]
-        );
+            [
+              username,
+              profile.displayName,
+              profile.emails[0].value,
+              userGoogle.rows[0].id,
+            ]
+          );
+        }
+
+        const user = {
+          username: username,
+          id: newUser ? newUser.rows[0].id : checkUser.rows[0].id,
+          googleId: profile.id,
+          name: profile.displayName,
+          email: profile.emails[0].value,
+          account_validation: newUser
+            ? newUser.rows[0].account_validation
+            : checkUser.rows[0].account_validation,
+        };
+
+        const token = jwt.sign(user, process.env.JWT_SECRET, {
+          expiresIn: "1h",
+        });
+
+        done(null, { user, token });
+      } catch (error) {
+        console.error(`Error at login with Google: ${error.message}`);
+        logger.error("Error at login with Google: " + error.message);
+        done(err, null);
       }
-
-      const user = {
-        username: username,
-        id: newUser ? newUser.rows[0].id : checkUser.rows[0].id,
-        googleId: profile.id,
-        name: profile.displayName,
-        email: profile.emails[0].value,
-        account_validation: newUser
-          ? newUser.rows[0].account_validation
-          : checkUser.rows[0].account_validation,
-      };
-
-      const token = jwt.sign(user, process.env.JWT_SECRET, {
-        expiresIn: "1h",
-      });
-
-      done(null, { user, token });
     }
   )
 );
@@ -397,8 +411,7 @@ router.get("/resend-email", async (req, res) => {
     .then(() => {
       console.log("Email sent");
       return res.status(201).json({
-        message:
-          "Registered Successfully. You received an Email to cofirm your account.",
+        message: "You received an Email to cofirm your account.",
         error: false,
       });
     })
@@ -420,23 +433,20 @@ router.get("/verify-email", async (req, res) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
     await pool.query(
       `
       UPDATE task_manager.users
       SET account_validation = true
-      WHERE email = $1 AND username = $2
+      WHERE id = $1
       `,
-      [decoded.email, decoded.username]
+      [decoded.id]
     );
 
-    res
-      .status(200)
-      .json({ message: "E-mail verificado com sucesso!", error: false });
-
-    return res.redirect("http://localhost:3000");
+    return res.status(200).redirect("http://localhost:3000/email-verification");
   } catch (error) {
-    res.status(400).json({ message: "Invalid Token.", error: true });
+    return res
+      .status(400)
+      .redirect("http://localhost:3000/email-verification-failed");
   }
 });
 
