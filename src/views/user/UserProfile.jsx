@@ -25,6 +25,19 @@ const UserProfile = () => {
     setOpenUserId(null);
   };
 
+  const [showAlert, setAlert] = useState(false);
+  const toggleAlert = (title, message) => {
+    const alertTitle = document.querySelector(".alert-title");
+    const alertMessage = document.querySelector(".alert-message");
+
+    if (title && message) {
+      alertTitle.innerText = title;
+      alertMessage.innerText = message;
+    }
+
+    setAlert(!showAlert);
+  };
+
   const updateProfile = () => {
     const data = {
       newName: newName,
@@ -32,6 +45,7 @@ const UserProfile = () => {
       oldPass: oldPass,
       newPass: newPass,
       repeatPass: repeatPass,
+      user: user,
     };
 
     const cleanData = (obj) => {
@@ -43,7 +57,6 @@ const UserProfile = () => {
       return obj;
     };
 
-    console.log(cleanData(data));
     fetch(`${ip}/update-profile`, {
       method: "PUT",
       headers: {
@@ -55,13 +68,24 @@ const UserProfile = () => {
       .then(async (response) => {
         if (!response.ok) {
           const errorData = await response.json();
-          return console.error(errorData);
+          return toggleAlert("Error", errorData.message);
         }
 
-        return await response.json();
+        return response.json();
       })
       .then((data) => {
-        console.log(data);
+        if (data && data.status) {
+          toggleAlert("Sucesso", data.message);
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
+        } else {
+          toggleAlert("Error", data);
+        }
+      })
+      .catch((error) => {
+        console.error("Internal Server Error: ", error);
+        return toggleAlert("Error", error);
       });
   };
 
@@ -219,14 +243,17 @@ const UserProfile = () => {
           </DialogActions>
         </Dialog>
         <button onClick={() => handleOpen(user.id)}>Edit Profile</button>
-        <button onClick={() => console.log("Changing password...")}>
-          Change Password
-        </button>
       </div>
 
       <div className="navigation-links">
         <Link to="/">Home</Link>
         <Link to="/tasks">Task List</Link>
+      </div>
+
+      <div id="alert-message" className={`${showAlert ? "show" : ""}`}>
+        <h1 className="alert-title">Sucesso</h1>
+        <p className="alert-message"></p>
+        <button onClick={toggleAlert}>Fechar</button>
       </div>
     </div>
   );

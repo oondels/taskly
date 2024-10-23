@@ -5,6 +5,7 @@ const bcrypt = require("bcryptjs");
 const pool = require("./db/db");
 const cookieParser = require("cookie-parser");
 const logger = require("./utils/logger");
+const validator = require("validator");
 require("dotenv").config();
 
 const authRoutes = require("./utils/auth/authRoutes");
@@ -192,33 +193,109 @@ app.put("/delete-task/:id", async (req, res) => {
 });
 
 app.put("/update-profile", async (req, res) => {
-  const { newName, newUserName, oldPass, newPass, repeatPass } = req.body;
+  const { oldPass, newPass, repeatPass, user } = req.body;
   const details = {
     newName: "name",
     newUsername: "username",
     oldPass: "password",
   };
-
-  let query = `UPDATE task_manager SET `;
-  Object.keys(req.body).forEach((key, index, array) => {
-    if (index === array.length - 1) {
-      query += `${details[key]}`;
-    } else {
-      query += `${details[key]}, `;
+  let params = [];
+  let userData = {};
+  Object.keys(req.body).forEach((key) => {
+    if (
+      key !== "user" &&
+      key !== "newPass" &&
+      key !== "repeatPass" &&
+      key !== "oldPass"
+    ) {
+      userData[key] = req.body[key];
     }
   });
 
-  // Continuar Daqui
+  let query = `UPDATE task_manager.users SET `;
+  Object.keys(userData).forEach((key, index, array) => {
+    if (index === array.length - 1) {
+      query += `${details[key]} = $${index + 1} `;
+      params.push(req.body[key]);
+    } else {
+      query += `${details[key]} = $${index + 1}, `;
+      params.push(req.body[key]);
+    }
+  });
+
   if (oldPass) {
+    if (query.includes("$")) {
+      query += `, password = $${params.length + 1} `;
+    } else {
+      query += ` password = $${params.length + 1} `;
+    }
+
     if (!newPass || !repeatPass) {
       console.log("Insira todos os dados da senha");
       return res
         .status(403)
-        .json({ message: "You must to insert all passwrod data" });
+        .json({ message: "You must to insert all password data" });
     }
+
+    if (newPass !== repeatPass) {
+      return res
+        .status(403)
+        .json({ message: "The passwords do not match. Please try again." });
+    }
+
+    if (
+      !(
+        validator.isLength(newPass, { min: 7 }) &&
+        /[A-Z]/.test(newPass) &&
+        /[a-z]/.test(newPass) &&
+        /\d/.test(newPass) &&
+        /\W/.test(newPass)
+      )
+    ) {
+      return res.status(403).json({
+        message:
+          "Password does not meet the requirements. Minimum length of 7 characters, at least one uppercase letter, one number, and at least one special character.",
+        error: true,
+      });
+    }
+
+    const queryUserPass = await pool.query(
+      `
+        SELECT password
+        FROM task_manager.users
+        WHERE id = $1
+      `,
+      [user.id]
+    );
+    const foundUser = queryUserPass.rows[0];
+    const checkPassword = await bcrypt.compare(oldPass, foundUser.password);
+
+    if (!checkPassword) {
+      return res.status(403).json({ message: "Invalid Password." });
+    }
+    const hashedPassword = await bcrypt.hash(newPass, 8);
+    params.push(hashedPassword);
   }
-  console.log(query);
-  res.json({ message: "Recebido" });
+
+  query += `WHERE id = $${params.length + 1} RETURNING *`;
+  params.push(user.id);
+  try {
+    const updateUser = await pool.query(query, params);
+    if (updateUser.rows.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "Error updating profile. Contact Support for help." });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Profile Updated Successfully.", status: true });
+  } catch (error) {
+    console.error("Error updating profile: ", error);
+    res
+      .status(500)
+      .json({ message: "Internal Server Error. Contact Support for help." });
+  }
 });
 
 app.post("/post-task", async (req, res) => {
