@@ -5,7 +5,7 @@ import { useAuth } from "../utils/auth";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, putUser } = useAuth();
 
   const [isMenuOpen, setMenuOpen] = useState(false);
   const toggleProfileMenu = () => {
@@ -15,6 +15,15 @@ const Navbar = () => {
   const handleProfile = () => {
     navigate("/profile");
   };
+
+  useEffect(() => {
+    if (!user) {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        putUser(JSON.parse(storedUser));
+      }
+    }
+  }, [user, putUser]);
 
   const logout = async () => {
     if (user) {
@@ -60,11 +69,6 @@ const Navbar = () => {
         </div>
 
         <span className="switch-container">
-          <label className="switch">
-            <input type="checkbox" id="mode-switch" />
-            <span className="slider"></span>
-          </label>
-
           {user && (
             <div className="profile-nav-container">
               <i

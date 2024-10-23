@@ -10,9 +10,10 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
 const TaskList = () => {
-  const { auth, putUser } = useAuth(); // Verifica se o usuário está autenticado
+  const { auth, user } = useAuth();
 
-  const [user, setUser] = useState("");
+  const [userData, setUser] = useState("");
+
   const [tasks, setTasks] = useState(null);
   const [openTaskId, setOpenTaskId] = useState(null);
 
@@ -32,11 +33,11 @@ const TaskList = () => {
   };
 
   const resendEmail = async () => {
-    if (user) {
-      console.log(user);
+    if (userData) {
+      console.log(userData);
       try {
         const response = await fetch(
-          `${ip}/auth/resend-email?username=${user.username}&id=${user.id}&email=${user.email}`,
+          `${ip}/auth/resend-email?username=${userData.username}&id=${userData.id}&email=${userData.email}`,
           {
             credentials: "include",
           }
@@ -65,33 +66,20 @@ const TaskList = () => {
 
   useEffect(() => {
     const getUserData = async () => {
-      try {
-        const response = await fetch(`${ip}/auth/check-auth`, {
-          credentials: "include",
-        });
-        if (!response.ok) {
-          console.error("Error getting user data");
-          return;
-        }
-        const userData = await response.json();
-        console.log(userData);
-
-        setUser(userData.user);
-        putUser(userData.user);
-      } catch (error) {
-        console.error("Error getting user data: ", error);
+      if (user) {
+        setUser(user);
       }
     };
 
     getUserData();
-  }, []);
+  }, [userData, setUser]);
 
   useEffect(() => {
     const getAllTasks = async () => {
       try {
-        if (!user) return;
+        if (!userData) return;
 
-        const response = await fetch(`${ip}/get-tastks/${user.id}`, {
+        const response = await fetch(`${ip}/get-tastks/${userData.id}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -111,7 +99,7 @@ const TaskList = () => {
     };
 
     getAllTasks();
-  }, [user]);
+  }, [userData]);
 
   const updateTask = async (id, action) => {
     const response = await fetch(`${ip}/${action}-task/${id}`, {
@@ -190,8 +178,8 @@ const TaskList = () => {
       description: description,
       priority: priority,
       date: date,
-      googleId: user.googleId,
-      userId: user.id,
+      googleId: userData.googleId,
+      userId: userData.id,
     };
 
     fetch(`${ip}/post-task`, {
@@ -276,7 +264,7 @@ const TaskList = () => {
   };
 
   return (
-    <div className="tasks-container">
+    <div className="tasks-container container">
       <i
         onClick={toggleTaskForm}
         className="material-symbols-outlined add-task"
@@ -286,7 +274,7 @@ const TaskList = () => {
 
       <div className="tasks-list">
         <h3>Tasks List</h3>
-        <h5>Olá {user.username}</h5>
+        <h5>Olá {userData.username}</h5>
       </div>
 
       <div className="task-actions">
@@ -488,7 +476,7 @@ const TaskList = () => {
         <button onClick={toggleAlert}>Fechar</button>
       </div>
 
-      {user && user.account_validation == false && (
+      {userData && userData.account_validation == false && (
         <div className="warning-account-not-verified">
           <h1>You must to verify your account</h1>
           <p>

@@ -14,12 +14,17 @@ export const AuthProvider = ({ children }) => {
         const response = await axios.get(
           "http://localhost:2399/auth/check-auth",
           {
-            withCredentials: true, // Inclui cookies na requisição
+            withCredentials: true,
           }
         );
         setAuth(response.data.authenticated);
+        putUser(response.data.user);
+
+        localStorage.setItem("user", JSON.stringify(response.data.user));
       } catch (error) {
         setAuth(false);
+        putUser(null);
+        localStorage.removeItem("user");
       }
       setLoading(false);
     };
